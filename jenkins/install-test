@@ -42,11 +42,41 @@ else # makeself installer
     sudo rm  -rf /opt/chef/*
 fi
 
+# ensure symlinks are gone, so that failures to recreate them get caught
+rm -f $PREFIX/bin/chef-client
+rm -f $PREFIX/bin/chef-solo
+rm -f $PREFIX/bin/chef-apply
+rm -f $PREFIX/bin/chef-shell
+rm -f $PREFIX/bin/knife
+rm -f $PREFIX/bin/shef
+rm -f $PREFIX/bin/ohai
+
 if exists curl;
 then
    curl -L "${OMNITRUCK_BASE_URL}/chef/install.sh" | sudo bash -s -- -v $INSTALL_CHEF_VERSION
 else
    wget -qO- "${OMNITRUCK_BASE_URL}/chef/install.sh" | sudo bash -s -- -v $INSTALL_CHEF_VERSION
+fi
+
+# sanity check that we're getting symlinks from the pre-install script
+if [ ! -e "/usr/bin/chef-client" ]; then
+  echo "/usr/bin/chef-client symlink was not installed by pre-install script!"
+  exit 1
+fi
+
+if [ ! -e "/usr/bin/knife" ]; then
+  echo "/usr/bin/knife symlink was not installed by pre-install script!"
+  exit 1
+fi
+
+if [ ! -e "/usr/bin/chef-solo" ]; then
+  echo "/usr/bin/chef-solo symlink was not installed by pre-install script!"
+  exit 1
+fi
+
+if [ ! -e "/usr/bin/ohai" ]; then
+  echo "/usr/bin/ohai symlink was not installed by pre-install script!"
+  exit 1
 fi
 
 chef-client --version
