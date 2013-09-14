@@ -19,6 +19,18 @@ exists()
   fi
 }
 
+# SmartOS builds in /opt/local instead
+is_smartos()
+{
+  uname -v | grep "^joyent" 2>&1>/dev/null
+}
+
+if is_smartos; then
+    PREFIX="/opt/local"
+else
+    PREFIX="/usr"
+fi
+
 # remove the chef package / clobber the files
 if exists dpkg;
 then
@@ -43,13 +55,13 @@ else # makeself installer
 fi
 
 # ensure symlinks are gone, so that failures to recreate them get caught
-rm -f $PREFIX/bin/chef-client
-rm -f $PREFIX/bin/chef-solo
-rm -f $PREFIX/bin/chef-apply
-rm -f $PREFIX/bin/chef-shell
-rm -f $PREFIX/bin/knife
-rm -f $PREFIX/bin/shef
-rm -f $PREFIX/bin/ohai
+sudo rm -f $PREFIX/bin/chef-client || true
+sudo rm -f $PREFIX/bin/chef-solo || true
+sudo rm -f $PREFIX/bin/chef-apply || true
+sudo rm -f $PREFIX/bin/chef-shell || true
+sudo rm -f $PREFIX/bin/knife || true
+sudo rm -f $PREFIX/bin/shef || true
+sudo rm -f $PREFIX/bin/ohai || true
 
 if exists curl;
 then
